@@ -1,6 +1,6 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Issue Volunteer Assignment'
+description: 'Allows issues to be self-assigned'
+author: 'Ben Hermann'
 inputs:
   milliseconds: # change this
     required: true
