@@ -7,8 +7,8 @@ async function run(): Promise<void> {
   try {
 
     // Only work on issue comments.
-    if (github.context.eventName != "issue_comment")  {
-      core.error("This is action is only valid on issue comments events.");
+    if (github.context.eventName !== "issue_comment")  {
+      core.setFailed("This is action is only valid on issue comments events.");
       return;
     }
 
