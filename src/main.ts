@@ -16,6 +16,9 @@ async function run(): Promise<void> {
 
     core.info("Working on issue comment...");
 
+    core.info("Sender:");
+    core.info(JSON.stringify(context.payload.sender));
+
     // Check for volunteer message 
     if (context.payload.comment!.body.toLowerCase().includes("i would like to work on this please!")) {
       core.info("Found volunteer message.");

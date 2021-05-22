@@ -50,6 +50,8 @@ function run() {
                 return;
             }
             core.info("Working on issue comment...");
+            core.info("Sender:");
+            core.info(JSON.stringify(utils_1.context.payload.sender));
             // Check for volunteer message 
             if (utils_1.context.payload.comment.body.toLowerCase().includes("i would like to work on this please!")) {
                 core.info("Found volunteer message.");
