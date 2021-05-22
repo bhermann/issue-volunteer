@@ -71,7 +71,7 @@ function run() {
                         owner: issueRef.owner,
                         repo: issueRef.repo,
                         issue_number: issueRef.number,
-                        body: "I assigned " + volunteer + " to the issue. Have fun working on it!"
+                        body: "Great! I assigned you (@" + volunteer + ") to the issue. Have fun working on it!"
                     });
                 }
                 else {
@@ -80,7 +80,7 @@ function run() {
                         owner: issueRef.owner,
                         repo: issueRef.repo,
                         issue_number: issueRef.number,
-                        body: "Issue already has a volunteer."
+                        body: "Sorry, can't help you here. This issue already has a volunteer."
                     });
                 }
             }

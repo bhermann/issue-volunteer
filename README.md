@@ -15,7 +15,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: bhermann/issue-volunteer@v0.1.11
+    - uses: bhermann/issue-volunteer@v0.1.12
       with:
         GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 ```
