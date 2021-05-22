@@ -11,17 +11,17 @@ async function run(): Promise<void> {
       core.setFailed("This is action is only valid on issue comments events.");
       return;
     }
-
+  
     core.info("Working on issue comment...");
+    core.info("Issue was:");
+    core.info(JSON.stringify(context.issue));
 
     // Check for volunteer message 
     if (context.payload.comment!.body.toLowerCase().includes("i would like to work on this please!")) {
       core.info("Found volunteer message.");
-      core.info(JSON.stringify(context.issue));
+
     } else {
-      core.info("Did not find volunteer message. Comment was:")
-      core.info(context.payload.comment!.body);
-      core.info("Lower case version:");
+      core.info("Did not find volunteer message. Comment was:");
       core.info(context.payload.comment!.body.toLowerCase());
       core.info(context.payload.comment!.body.toLowerCase().includes("i would like"));
     }

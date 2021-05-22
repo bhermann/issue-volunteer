@@ -1,6 +1,6 @@
 {
   "name": "issue-volunteer",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": true,
   "description": "GitHub Action to automatically assign issue volunteers",
   "main": "lib/main.js",
