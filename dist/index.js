@@ -49,14 +49,16 @@ function run() {
                 return;
             }
             core.info("Working on issue comment...");
+            core.info("Issue was:");
+            core.info(JSON.stringify(utils_1.context.issue));
             // Check for volunteer message 
-            if (utils_1.context.payload.comment.body.toLowerCase().includes("I would like to work on this please!")) {
+            if (utils_1.context.payload.comment.body.toLowerCase().includes("i would like to work on this please!")) {
                 core.info("Found volunteer message.");
-                core.info(JSON.stringify(utils_1.context.issue));
             }
             else {
                 core.info("Did not find volunteer message. Comment was:");
-                core.info(utils_1.context.payload.comment.body);
+                core.info(utils_1.context.payload.comment.body.toLowerCase());
+                core.info(utils_1.context.payload.comment.body.toLowerCase().includes("i would like"));
             }
         }
         catch (error) {
