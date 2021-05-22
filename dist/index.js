@@ -42,15 +42,21 @@ const utils_1 = __webpack_require__(30);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            core.info("Running issue volunteer action...");
             // Only work on issue comments.
             if (github.context.eventName !== "issue_comment") {
                 core.setFailed("This is action is only valid on issue comments events.");
                 return;
             }
+            core.info("Working on issue comment...");
             // Check for volunteer message 
             if (utils_1.context.payload.comment.body.toLowerCase().includes("I would like to work on this please!")) {
                 core.info("Found volunteer message.");
                 core.info(JSON.stringify(utils_1.context.issue));
+            }
+            else {
+                core.info("Did not find volunteer message. Comment was:");
+                core.info(utils_1.context.payload.comment.body);
             }
         }
         catch (error) {
