@@ -16,9 +16,6 @@ async function run(): Promise<void> {
 
     core.info("Working on issue comment...");
 
-    core.info("Sender:");
-    core.info(JSON.stringify(context.payload.sender));
-
     // Check for volunteer message 
     if (context.payload.comment!.body.toLowerCase().includes("i would like to work on this please!")) {
       core.info("Found volunteer message.");
@@ -32,7 +29,7 @@ async function run(): Promise<void> {
       if (!issue.assignees || issue.assignees!.length == 0) {
         core.info("Issue can be assigned to the volunteer.");
 
-        const volunteer = "bhermann";
+        const volunteer = context.payload.sender!['login'];
 
         octokit.rest.issues.addAssignees({
           owner: issueRef.owner, 
@@ -40,6 +37,12 @@ async function run(): Promise<void> {
           issue_number: issueRef.number,
           assignees: [ volunteer ]
         })
+
+        octokit.rest.issues.createComment({
+          owner: issueRef.owner, 
+          repo: issueRef.repo , 
+          issue_number: issueRef.number,
+          body: "I assigned " + volunteer + " to the issue. Have fun working on it!"});
 
       } else {
         core.info("Issue already has an assignee.");

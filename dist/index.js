@@ -50,8 +50,6 @@ function run() {
                 return;
             }
             core.info("Working on issue comment...");
-            core.info("Sender:");
-            core.info(JSON.stringify(utils_1.context.payload.sender));
             // Check for volunteer message 
             if (utils_1.context.payload.comment.body.toLowerCase().includes("i would like to work on this please!")) {
                 core.info("Found volunteer message.");
@@ -62,12 +60,18 @@ function run() {
                 const issue = issueResponse.data;
                 if (!issue.assignees || issue.assignees.length == 0) {
                     core.info("Issue can be assigned to the volunteer.");
-                    const volunteer = "bhermann";
+                    const volunteer = utils_1.context.payload.sender['login'];
                     octokit.rest.issues.addAssignees({
                         owner: issueRef.owner,
                         repo: issueRef.repo,
                         issue_number: issueRef.number,
                         assignees: [volunteer]
+                    });
+                    octokit.rest.issues.createComment({
+                        owner: issueRef.owner,
+                        repo: issueRef.repo,
+                        issue_number: issueRef.number,
+                        body: "I assigned " + volunteer + " to the issue. Have fun working on it!"
                     });
                 }
                 else {
