@@ -49,22 +49,37 @@ function run() {
                 core.setFailed("This is action is only valid on issue comments events.");
                 return;
             }
-            const octokit = github.getOctokit(token);
             core.info("Working on issue comment...");
-            core.info("Issue was:");
-            const issueRef = utils_1.context.issue;
-            core.info(JSON.stringify(issueRef));
-            const issue = yield octokit.rest.issues.get({ owner: issueRef.owner, repo: issueRef.repo, issue_number: issueRef.number });
-            core.info(issue.data.title);
-            core.info(JSON.stringify(issue));
             // Check for volunteer message 
             if (utils_1.context.payload.comment.body.toLowerCase().includes("i would like to work on this please!")) {
                 core.info("Found volunteer message.");
+                const octokit = github.getOctokit(token);
+                const issueRef = utils_1.context.issue;
+                core.info(JSON.stringify(issueRef));
+                const issueResponse = yield octokit.rest.issues.get({ owner: issueRef.owner, repo: issueRef.repo, issue_number: issueRef.number });
+                const issue = issueResponse.data;
+                if (!issue.assignees || issue.assignees.length == 0) {
+                    core.info("Issue can be assigned to the volunteer.");
+                    const volunteer = "bhermann";
+                    octokit.rest.issues.addAssignees({
+                        owner: issueRef.owner,
+                        repo: issueRef.repo,
+                        issue_number: issueRef.number,
+                        assignees: [volunteer]
+                    });
+                }
+                else {
+                    core.info("Issue already has an assignee.");
+                    octokit.rest.issues.createComment({
+                        owner: issueRef.owner,
+                        repo: issueRef.repo,
+                        issue_number: issueRef.number,
+                        body: "Issue already has a volunteer."
+                    });
+                }
             }
             else {
-                core.info("Did not find volunteer message. Comment was:");
-                core.info(utils_1.context.payload.comment.body.toLowerCase());
-                core.info(utils_1.context.payload.comment.body.toLowerCase().includes("i would like"));
+                core.info("Did not find volunteer message.");
             }
         }
         catch (error) {
