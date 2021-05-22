@@ -21,6 +21,9 @@ async function run(): Promise<void> {
     } else {
       core.info("Did not find volunteer message. Comment was:")
       core.info(context.payload.comment!.body);
+      core.info("Lower case version:");
+      core.info(context.payload.comment!.body.toLowerCase());
+      core.info(context.payload.comment!.body.toLowerCase().includes("i would like"));
     }
   } catch (error) {
     core.setFailed(error.message)
