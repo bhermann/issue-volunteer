@@ -42,15 +42,21 @@ const utils_1 = __webpack_require__(30);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            const token = core.getInput('GITHUB_TOKEN', { required: true });
             core.info("Running issue volunteer action...");
             // Only work on issue comments.
             if (github.context.eventName !== "issue_comment") {
                 core.setFailed("This is action is only valid on issue comments events.");
                 return;
             }
+            const octokit = github.getOctokit(token);
             core.info("Working on issue comment...");
             core.info("Issue was:");
-            core.info(JSON.stringify(utils_1.context.issue));
+            const issueRef = utils_1.context.issue;
+            core.info(JSON.stringify(issueRef));
+            const issue = yield octokit.rest.issues.get({ owner: issueRef.owner, repo: issueRef.repo, issue_number: issueRef.number });
+            core.info(issue.data.title);
+            core.info(JSON.stringify(issue));
             // Check for volunteer message 
             if (utils_1.context.payload.comment.body.toLowerCase().includes("i would like to work on this please!")) {
                 core.info("Found volunteer message.");
