@@ -5,6 +5,15 @@ inputs:
   GITHUB_TOKEN:
     required: true
     description: 'The GITHUB_TOKEN secret'
+  assign_phrase:
+    description: 'Phrase needed to get an issue assigned'
+    default: 'I would like to work on this please!'
+  completed_phrase:
+    description: 'Phrase needed to complete an issue'
+    default: 'I completed this work package.'
+  completed_label:
+    description: 'Label to be attached to issue after completion'
+    default: 'done'
 runs:
   using: 'node12'
   main: 'dist/index.js'
