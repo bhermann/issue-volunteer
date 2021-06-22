@@ -43,9 +43,18 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const token = core.getInput('GITHUB_TOKEN', { required: true });
-            const assign_phrase = core.getInput('assign_phrase').toLowerCase();
-            const completed_phrase = core.getInput('completed_phrase').toLowerCase();
-            const completed_label = core.getInput('completed_label').toLowerCase();
+            const phrases = {
+                assign: core.getInput('assign_phrase').toLowerCase(),
+                completion: core.getInput('completed_phrase').toLowerCase(),
+                phase1Results: core.getInput('phase1_results_phrase').toLowerCase(),
+                phase2Results: core.getInput('phase2_results_phrase').toLowerCase(),
+                unroll: core.getInput('unroll_phrase').toLowerCase()
+            };
+            const labels = {
+                phase1: core.getInput('label_phase1'),
+                phase2: core.getInput('label_phase2'),
+                phase3: core.getInput('label_phase3')
+            };
             const octokit = github.getOctokit(token);
             core.info("Running issue volunteer action...");
             // Only work on issue comments.
@@ -56,11 +65,20 @@ function run() {
             core.info("Working on issue comment...");
             const issueRef = utils_1.context.issue;
             const comment_text = utils_1.context.payload.comment.body.toLowerCase();
-            if (comment_text.includes(assign_phrase)) {
+            if (comment_text.includes(phrases.assign)) {
                 yield assignIssue(octokit, issueRef);
             }
-            else if (comment_text.includes(completed_phrase)) {
+            else if (comment_text.includes(phrases.completion)) {
                 yield completeIssue(token);
+            }
+            else if (comment_text.includes(phrases.phase1Results)) {
+                yield processResults(token, phrases.phase1Results);
+            }
+            else if (comment_text.includes(phrases.phase2Results)) {
+                yield processResults(token, phrases.phase2Results);
+            }
+            else if (comment_text.includes(phrases.unroll)) {
+                yield unroll(token);
             }
             else {
                 core.debug("Comment did not include any magic comment.");
@@ -72,18 +90,21 @@ function run() {
                     if (!issue.assignees || issue.assignees.length == 0) {
                         core.info("Issue can be assigned to the volunteer.");
                         const volunteer = utils_1.context.payload.sender['login'];
-                        octokit.rest.issues.addAssignees({
-                            owner: issueRef.owner,
-                            repo: issueRef.repo,
-                            issue_number: issueRef.number,
-                            assignees: [volunteer]
-                        });
-                        octokit.rest.issues.createComment({
-                            owner: issueRef.owner,
-                            repo: issueRef.repo,
-                            issue_number: issueRef.number,
-                            body: "Great! I assigned you (@" + volunteer + ") to the issue. Have fun working on it!"
-                        });
+                        if (issue.labels.find(l => l == labels.phase1 || l == labels.phase2)) {
+                            // TODO: Check that phase1 and phase2 assignees are different
+                            octokit.rest.issues.addAssignees({
+                                owner: issueRef.owner,
+                                repo: issueRef.repo,
+                                issue_number: issueRef.number,
+                                assignees: [volunteer]
+                            });
+                            octokit.rest.issues.createComment({
+                                owner: issueRef.owner,
+                                repo: issueRef.repo,
+                                issue_number: issueRef.number,
+                                body: "Great! I assigned you (@" + volunteer + ") to the issue. Have fun working on it!"
+                            });
+                        }
                     }
                     else {
                         core.info("Issue already has an assignee.");
@@ -103,29 +124,42 @@ function run() {
                     const issue = (yield octokit.rest.issues.get({ owner: issueRef.owner, repo: issueRef.repo, issue_number: issueRef.number })).data;
                     const reporter = utils_1.context.payload.sender['login'];
                     if ((_a = issue.assignees) === null || _a === void 0 ? void 0 : _a.find(a => (a === null || a === void 0 ? void 0 : a.login) == reporter)) {
-                        octokit.rest.issues.removeAssignees({
-                            owner: issueRef.owner,
-                            repo: issueRef.repo,
-                            issue_number: issueRef.number,
-                            assignees: [reporter]
-                        });
-                        octokit.rest.issues.removeAllLabels({
-                            owner: issueRef.owner,
-                            repo: issueRef.repo,
-                            issue_number: issueRef.number
-                        });
-                        octokit.rest.issues.addLabels({
-                            owner: issueRef.owner,
-                            repo: issueRef.repo,
-                            issue_number: issueRef.number,
-                            labels: [completed_label]
-                        });
-                        octokit.rest.issues.createComment({
-                            owner: issueRef.owner,
-                            repo: issueRef.repo,
-                            issue_number: issueRef.number,
-                            body: "Thank you @" + reporter + "! We have pushed the issue along in the workflow."
-                        });
+                        if (issue.labels.find(l => l == labels.phase1 || l == labels.phase2)) {
+                            var currentLabel = "";
+                            var nextLabel = "";
+                            if (issue.labels.find(l => l == labels.phase1)) {
+                                currentLabel = labels.phase1;
+                                nextLabel = labels.phase2;
+                            }
+                            else if (issue.labels.find(l => l == labels.phase2)) {
+                                currentLabel = labels.phase2;
+                                nextLabel = labels.phase3;
+                            }
+                            octokit.rest.issues.removeAssignees({
+                                owner: issueRef.owner,
+                                repo: issueRef.repo,
+                                issue_number: issueRef.number,
+                                assignees: [reporter]
+                            });
+                            octokit.rest.issues.removeLabel({
+                                owner: issueRef.owner,
+                                repo: issueRef.repo,
+                                issue_number: issueRef.number,
+                                name: currentLabel
+                            });
+                            octokit.rest.issues.addLabels({
+                                owner: issueRef.owner,
+                                repo: issueRef.repo,
+                                issue_number: issueRef.number,
+                                labels: [nextLabel]
+                            });
+                            octokit.rest.issues.createComment({
+                                owner: issueRef.owner,
+                                repo: issueRef.repo,
+                                issue_number: issueRef.number,
+                                body: "Thank you @" + reporter + "! We have pushed the issue along in the workflow."
+                            });
+                        }
                     }
                     else {
                         core.info("Completion requested for issue where the requestor was not assigned.");
@@ -141,6 +175,12 @@ function run() {
         }
         catch (error) {
             core.setFailed(error.message);
+        }
+        function processResults(token, resultPhrase) {
+            core.info("Found phrase for results.");
+        }
+        function unroll(token) {
+            core.info("Found phrase to unroll.");
         }
     });
 }

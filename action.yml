@@ -5,15 +5,30 @@ inputs:
   GITHUB_TOKEN:
     required: true
     description: 'The GITHUB_TOKEN secret'
+  label_phase1:
+    description: 'Label for the first phase (default: collect)'
+    default: 'collect'
+  label_phase2:
+    description: 'Label for the second phase (default: check)'
+    default: 'check'
+  label_phase3: 
+    description: 'Label for the third phase (default: collect statistics)'
+    default: 'stats'
   assign_phrase:
-    description: 'Phrase needed to get an issue assigned'
+    description: 'Phrase needed to get an issue assigned (default: I would like to work on this please!)'
     default: 'I would like to work on this please!'
-  completed_phrase:
-    description: 'Phrase needed to complete an issue'
+  completion_phrase:
+    description: 'Phrase needed to complete an issue (default: I completed this work package.)'
     default: 'I completed this work package.'
-  completed_label:
-    description: 'Label to be attached to issue after completion'
-    default: 'done'
+  phase1_results_phrase:
+    description: 'Phrase needed to recognize results (default: Results of Phase 1)'
+    default: 'Results of Phase 1'
+  phase2_results_phrase:
+    description: 'Phrase needed to recognize results (default: Results of Phase 2)'
+    default: 'Results of Phase 2'
+  unroll_phrase: 
+    description: 'Phrase needed to unroll a work package (default: Unroll please!)'
+    default: 'Unroll please!'
 runs:
   using: 'node12'
   main: 'dist/index.js'
