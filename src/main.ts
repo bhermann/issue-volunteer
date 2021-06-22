@@ -54,6 +54,23 @@ async function run(): Promise<void> {
       core.debug("Comment did not include any magic comment.");
     }
 
+    interface LabelType 
+      {
+        id?: number | undefined;
+        node_id?: string | undefined;
+        url?: string | undefined;
+        name?: string | undefined;
+        description?: string | null | undefined;
+        color?: string | null | undefined;
+        default?: boolean | undefined;
+    }
+    
+
+    function transformLabels(l : (string | LabelType)) : string {
+    if (typeof l === "string") return (l as string);
+    return (l as LabelType).name!
+  }
+
     async function assignIssue(octokit: Octokit, issueRef: IssueRef) {
       core.info("Found assignment phrase.");
       const issue = (await octokit.rest.issues.get({ owner: issueRef.owner, repo: issueRef.repo, issue_number: issueRef.number })).data;
@@ -63,9 +80,7 @@ async function run(): Promise<void> {
 
         const volunteer = context.payload.sender!['login'];
 
-        issue.labels.forEach(l => core.info(JSON.stringify(l)));
-        
-        if (issue.labels.find(l => l == labels.phase1 || l == labels.phase2) != null) {
+        if (issue.labels.map(transformLabels).find(l => l == labels.phase1 || l == labels.phase2) != null) {
           
           // TODO: Check that phase1 and phase2 assignees are different
 
@@ -103,7 +118,7 @@ async function run(): Promise<void> {
 
       if (issue.assignees?.find(a => a?.login == reporter)) {
 
-        if (issue.labels.find(l => l == labels.phase1 || l == labels.phase2) != null) {
+        if (issue.labels.map(transformLabels).find(l => l == labels.phase1 || l == labels.phase2) != null) {
 
           var currentLabel : string = "";
           var nextLabel : string = "";
