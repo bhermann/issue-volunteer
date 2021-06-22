@@ -9,7 +9,7 @@ async function run(): Promise<void> {
 
     const phrases = {
       assign : core.getInput('assign_phrase').toLowerCase(),
-      completion : core.getInput('completed_phrase').toLowerCase(),
+      completion : core.getInput('completion_phrase').toLowerCase(),
       phase1Results : core.getInput('phase1_results_phrase').toLowerCase(),
       phase2Results : core.getInput('phase2_results_phrase').toLowerCase(),
       unroll : core.getInput('unroll_phrase').toLowerCase()
