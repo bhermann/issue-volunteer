@@ -90,6 +90,7 @@ function run() {
                     if (!issue.assignees || issue.assignees.length == 0) {
                         core.info("Issue can be assigned to the volunteer.");
                         const volunteer = utils_1.context.payload.sender['login'];
+                        issue.labels.forEach(l => core.info(JSON.stringify(l)));
                         if (issue.labels.find(l => l == labels.phase1 || l == labels.phase2) != null) {
                             // TODO: Check that phase1 and phase2 assignees are different
                             octokit.rest.issues.addAssignees({

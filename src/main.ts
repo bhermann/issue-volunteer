@@ -63,6 +63,8 @@ async function run(): Promise<void> {
 
         const volunteer = context.payload.sender!['login'];
 
+        issue.labels.forEach(l => core.info(JSON.stringify(l)));
+        
         if (issue.labels.find(l => l == labels.phase1 || l == labels.phase2) != null) {
           
           // TODO: Check that phase1 and phase2 assignees are different
