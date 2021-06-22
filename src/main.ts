@@ -123,10 +123,10 @@ async function run(): Promise<void> {
           var currentLabel : string = "";
           var nextLabel : string = "";
 
-          if (issue.labels.find(l => l == labels.phase1)) {
+          if (issue.labels.map(transformLabels).find(l => l == labels.phase1)) {
             currentLabel = labels.phase1;
             nextLabel = labels.phase2;
-          } else if (issue.labels.find(l => l == labels.phase2)) { 
+          } else if (issue.labels.map(transformLabels).find(l => l == labels.phase2)) { 
             currentLabel = labels.phase2;
             nextLabel = labels.phase3;
           }

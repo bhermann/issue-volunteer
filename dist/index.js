@@ -132,11 +132,11 @@ function run() {
                         if (issue.labels.map(transformLabels).find(l => l == labels.phase1 || l == labels.phase2) != null) {
                             var currentLabel = "";
                             var nextLabel = "";
-                            if (issue.labels.find(l => l == labels.phase1)) {
+                            if (issue.labels.map(transformLabels).find(l => l == labels.phase1)) {
                                 currentLabel = labels.phase1;
                                 nextLabel = labels.phase2;
                             }
-                            else if (issue.labels.find(l => l == labels.phase2)) {
+                            else if (issue.labels.map(transformLabels).find(l => l == labels.phase2)) {
                                 currentLabel = labels.phase2;
                                 nextLabel = labels.phase3;
                             }
