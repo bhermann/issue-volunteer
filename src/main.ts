@@ -63,7 +63,7 @@ async function run(): Promise<void> {
 
         const volunteer = context.payload.sender!['login'];
 
-        if (issue.labels.find(l => l == labels.phase1 || l == labels.phase2)) {
+        if (issue.labels.find(l => l == labels.phase1 || l == labels.phase2) != null) {
           
           // TODO: Check that phase1 and phase2 assignees are different
 
@@ -101,7 +101,7 @@ async function run(): Promise<void> {
 
       if (issue.assignees?.find(a => a?.login == reporter)) {
 
-        if (issue.labels.find(l => l == labels.phase1 || l == labels.phase2)) {
+        if (issue.labels.find(l => l == labels.phase1 || l == labels.phase2) != null) {
 
           var currentLabel : string = "";
           var nextLabel : string = "";

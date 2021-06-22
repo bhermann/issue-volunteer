@@ -90,7 +90,7 @@ function run() {
                     if (!issue.assignees || issue.assignees.length == 0) {
                         core.info("Issue can be assigned to the volunteer.");
                         const volunteer = utils_1.context.payload.sender['login'];
-                        if (issue.labels.find(l => l == labels.phase1 || l == labels.phase2)) {
+                        if (issue.labels.find(l => l == labels.phase1 || l == labels.phase2) != null) {
                             // TODO: Check that phase1 and phase2 assignees are different
                             octokit.rest.issues.addAssignees({
                                 owner: issueRef.owner,
@@ -124,7 +124,7 @@ function run() {
                     const issue = (yield octokit.rest.issues.get({ owner: issueRef.owner, repo: issueRef.repo, issue_number: issueRef.number })).data;
                     const reporter = utils_1.context.payload.sender['login'];
                     if ((_a = issue.assignees) === null || _a === void 0 ? void 0 : _a.find(a => (a === null || a === void 0 ? void 0 : a.login) == reporter)) {
-                        if (issue.labels.find(l => l == labels.phase1 || l == labels.phase2)) {
+                        if (issue.labels.find(l => l == labels.phase1 || l == labels.phase2) != null) {
                             var currentLabel = "";
                             var nextLabel = "";
                             if (issue.labels.find(l => l == labels.phase1)) {
