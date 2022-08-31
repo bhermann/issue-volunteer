@@ -23,7 +23,7 @@ async function run(): Promise<void> {
 
     const octokit = github.getOctokit(token);
     type Octokit = typeof octokit;
-    
+
     type IssueRef = { owner: string; repo: string; number: number; }
 
 
@@ -54,7 +54,7 @@ async function run(): Promise<void> {
       core.debug("Comment did not include any magic comment.");
     }
 
-    interface LabelType 
+    interface LabelType
       {
         id?: number | undefined;
         node_id?: string | undefined;
@@ -64,7 +64,7 @@ async function run(): Promise<void> {
         color?: string | null | undefined;
         default?: boolean | undefined;
     }
-    
+
 
     function transformLabels(l : (string | LabelType)) : string {
     if (typeof l === "string") return (l as string);
@@ -81,7 +81,7 @@ async function run(): Promise<void> {
         const volunteer = context.payload.sender!['login'];
 
         if (issue.labels.map(transformLabels).find(l => l == labels.phase1 || l == labels.phase2) != null) {
-          
+
           // TODO: Check that phase1 and phase2 assignees are different
 
           octokit.rest.issues.addAssignees({
@@ -90,7 +90,7 @@ async function run(): Promise<void> {
             issue_number: issueRef.number,
             assignees: [volunteer]
           });
-  
+
           octokit.rest.issues.createComment({
             owner: issueRef.owner,
             repo: issueRef.repo,
@@ -126,7 +126,7 @@ async function run(): Promise<void> {
           if (issue.labels.map(transformLabels).find(l => l == labels.phase1)) {
             currentLabel = labels.phase1;
             nextLabel = labels.phase2;
-          } else if (issue.labels.map(transformLabels).find(l => l == labels.phase2)) { 
+          } else if (issue.labels.map(transformLabels).find(l => l == labels.phase2)) {
             currentLabel = labels.phase2;
             nextLabel = labels.phase3;
           }
@@ -172,18 +172,16 @@ async function run(): Promise<void> {
     }
 
   } catch (error) {
-    core.setFailed(error.message)
+    core.setFailed((error as Error).message)
   }
 
   function processResults(token: string, resultPhrase: string) {
     core.info("Found phrase for results.");
   }
-  
+
   function unroll(token: string) {
     core.info("Found phrase to unroll.");
   }
 }
 
 run()
-
-
